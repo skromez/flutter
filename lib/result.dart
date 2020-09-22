@@ -7,11 +7,11 @@ class Result extends StatelessWidget {
   Result(this.result, this.resetQuiz);
 
   String get resultPhase {
-    String resultText = 'Ты как кто сломал мне приложуху я хз как мне похуй';
+    String resultText;
     if (result <= 8) {
       resultText = 'Ты Сергей Галуза СЕО ПЛАНЕТЫ ЗЕМЛЯ';
     } else if (result <= 12) {
-      var resultText = 'Ты Дима Гномиков';
+      resultText = 'Ты Дима Гномиков';
     } else if (result <= 16) {
       resultText = 'Ты Vindriks ака Витя ака Винтик';
     } else {
