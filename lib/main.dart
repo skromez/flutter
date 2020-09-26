@@ -1,80 +1,99 @@
 import 'package:flutter/material.dart';
+import 'widgets/new_transaction.dart';
+import 'widgets/transaction_list.dart';
 
-import './quiz.dart';
-import './result.dart';
+import 'models/transaction.dart';
 
 void main() => runApp(MyApp());
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return _MyAppState();
+  Widget build(BuildContext ctx) {
+    return MaterialApp(
+      title: 'Personal Expenses',
+      theme: ThemeData(
+        primarySwatch: Colors.amber,
+        fontFamily: 'Quicksand',
+      ),
+      home: MyHomePage(),
+    );
   }
 }
 
-class _MyAppState extends State<MyApp> {
-  var _questionIndex = 0;
-  var _totalScore = 0;
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
 
-  void _resetQuiz() {
+class _MyHomePageState extends State<MyHomePage> {
+  final titleController = TextEditingController();
+  final amountController = TextEditingController();
+
+  final List<Transaction> _userTransactions = [
+    /*Transaction(
+      id: 't1',
+      title: 'New Shoes',
+      amount: 100,
+      date: DateTime.now(),
+    ),
+    Transaction(
+      id: 't2',
+      title: 'Weekly Groceries',
+      amount: 200,
+      date: DateTime.now(),
+    ),*/
+  ];
+
+  void _addNewTransaction(String title, int amount) {
+    final newTx = Transaction(
+      title: title,
+      amount: amount,
+      date: DateTime.now(),
+      id: DateTime.now().toString(),
+    );
+
     setState(() {
-      _questionIndex = 0;
-      _totalScore = 0;
+      _userTransactions.add(newTx);
     });
   }
 
-  static const _questions = [
-    {
-      'questionText': 'Кто самый умный программист',
-      'answers': [
-        {'text': 'Гоша', 'score': 10},
-        {'text': 'Лиза', 'score': 5},
-        {'text': 'Коля', 'score': 3},
-        {'text': 'Кофе машина', 'score': 0},
-      ]
-    },
-    {
-      'questionText': 'Самый лучший ПМ',
-      'answers': [
-        {'text': 'Саша Соловьев', 'score': 10},
-        {'text': 'Антон Брилев', 'score': 5},
-        {'text': 'Лена Татаринова', 'score': 3},
-        {'text': 'Сергей Галуза', 'score': 0},
-      ]
-    },
-    {
-      'questionText': 'Самый сложный вопрос человечества',
-      'answers': [
-        {'text': 'if (array.length) что выдаст???', 'score': 10},
-        {'text': 'mapDispatchToProps', 'score': 5},
-        {'text': 'Что такое ООП', 'score': 3},
-        {'text': 'Папей гавна', 'score': 0},
-      ]
-    },
-  ];
-
-  void _answerQuestion(int score) {
-    setState(() {
-      _questionIndex++;
-      _totalScore += score;
-    });
+  void _startAddNewTransaction(BuildContext ctx) {
+    showModalBottomSheet(
+        context: ctx,
+        builder: (_) {
+          return NewTransaction(addNewTx: _addNewTransaction);
+        });
   }
 
   @override
   Widget build(BuildContext c) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('My First App'),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Personal Expenses"),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => _startAddNewTransaction(context),
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          // mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Container(
+              width: double.infinity,
+              child: Card(elevation: 5, child: Text('CHART!')),
+            ),
+            TransactionList(_userTransactions)
+          ],
         ),
-        body: _questionIndex < _questions.length
-            ? Quiz(
-                answerQuestion: _answerQuestion,
-                questionIndex: _questionIndex,
-                questions: _questions,
-              )
-            : Result(_totalScore, _resetQuiz),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () => _startAddNewTransaction(context),
       ),
     );
   }
